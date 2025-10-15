@@ -23,7 +23,24 @@ Undocumented declaration.
 
 ### MediaUpload
 
-Undocumented declaration.
+MediaUpload component for selecting media files from the WordPress media library.
+
+_Parameters_
+
+-   _props_ `Object`: - Component props.
+-   _props.onSelect_ `Function`: - Callback function called when media is selected.
+-   _props.multiple_ `[boolean]`: - Whether to allow multiple selections.
+-   _props.gallery_ `[boolean]`: - Whether to use gallery mode.
+-   _props.allowedTypes_ `[string[]]`: - Array of allowed media types.
+-   _props.value_ `[number|number[]]`: - Currently selected media ID(s).
+-   _props.allowedAttributes_ `[string[]]`: - Array of attribute keys to include in the returned media objects. If not provided, uses the default set of attributes. This is useful for preserving custom meta fields on attachments.
+-   _props.render_ `Function`: - Render prop function that receives { open } to trigger the modal.
+-   _props.onClose_ `[Function]`: - Callback function called when the modal is closed.
+-   _props.title_ `[string]`: - Title for the media selection modal.
+-   _props.modalClass_ `[string]`: - CSS class to add to the modal.
+-   _props.addToGallery_ `[boolean]`: - Whether to add to existing gallery.
+-   _props.unstableFeaturedImageFlow_ `[boolean]`: - Whether to use featured image flow.
+-   _props.mode_ `[string]`: - Active tab mode in the media modal.
 
 ### privateApis
 

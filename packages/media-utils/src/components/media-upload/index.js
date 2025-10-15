@@ -6,6 +6,19 @@ import { __ } from '@wordpress/i18n';
 
 const DEFAULT_EMPTY_GALLERY = [];
 
+// Default attributes to include in slimmed image objects
+const DEFAULT_ALLOWED_ATTRIBUTES = [
+	'sizes',
+	'mime',
+	'type',
+	'subtype',
+	'id',
+	'url',
+	'alt',
+	'link',
+	'caption',
+];
+
 /**
  * Prepares the Featured Image toolbars and frames.
  *
@@ -230,19 +243,11 @@ const getGalleryDetailsMediaFrame = () => {
 
 // The media library image object contains numerous attributes
 // we only need this set to display the image in the library.
-const slimImageObject = ( img ) => {
-	const attrSet = [
-		'sizes',
-		'mime',
-		'type',
-		'subtype',
-		'id',
-		'url',
-		'alt',
-		'link',
-		'caption',
-	];
-	return attrSet.reduce( ( result, key ) => {
+const slimImageObject = (
+	img,
+	allowedAttributes = DEFAULT_ALLOWED_ATTRIBUTES
+) => {
+	return allowedAttributes.reduce( ( result, key ) => {
 		if ( img?.hasOwnProperty( key ) ) {
 			result[ key ] = img[ key ];
 		}
@@ -263,6 +268,29 @@ const getAttachmentsCollection = ( ids ) => {
 	} );
 };
 
+/**
+ * MediaUpload component for selecting media files from the WordPress media library.
+ *
+ * @class MediaUpload
+ * @augments Component
+ *
+ * @param {Object}          props                                   - Component props.
+ * @param {Function}        props.onSelect                          - Callback function called when media is selected.
+ * @param {boolean}         [props.multiple=false]                  - Whether to allow multiple selections.
+ * @param {boolean}         [props.gallery=false]                   - Whether to use gallery mode.
+ * @param {string[]}        [props.allowedTypes]                    - Array of allowed media types.
+ * @param {number|number[]} [props.value]                           - Currently selected media ID(s).
+ * @param {string[]}        [props.allowedAttributes]               - Array of attribute keys to include in the returned media objects.
+ *                                                                  If not provided, uses the default set of attributes.
+ *                                                                  This is useful for preserving custom meta fields on attachments.
+ * @param {Function}        props.render                            - Render prop function that receives { open } to trigger the modal.
+ * @param {Function}        [props.onClose]                         - Callback function called when the modal is closed.
+ * @param {string}          [props.title]                           - Title for the media selection modal.
+ * @param {string}          [props.modalClass]                      - CSS class to add to the modal.
+ * @param {boolean}         [props.addToGallery=false]              - Whether to add to existing gallery.
+ * @param {boolean}         [props.unstableFeaturedImageFlow=false] - Whether to use featured image flow.
+ * @param {string}          [props.mode]                            - Active tab mode in the media modal.
+ */
 class MediaUpload extends Component {
 	constructor() {
 		super( ...arguments );
@@ -410,7 +438,7 @@ class MediaUpload extends Component {
 	}
 
 	onUpdate( selections ) {
-		const { onSelect, multiple = false } = this.props;
+		const { onSelect, multiple = false, allowedAttributes } = this.props;
 		const state = this.frame.state();
 		const selectedImages = selections || state.get( 'selection' );
 
@@ -421,11 +449,16 @@ class MediaUpload extends Component {
 		if ( multiple ) {
 			onSelect(
 				selectedImages.models.map( ( model ) =>
-					slimImageObject( model.toJSON() )
+					slimImageObject( model.toJSON(), allowedAttributes )
 				)
 			);
 		} else {
-			onSelect( slimImageObject( selectedImages.models[ 0 ].toJSON() ) );
+			onSelect(
+				slimImageObject(
+					selectedImages.models[ 0 ].toJSON(),
+					allowedAttributes
+				)
+			);
 		}
 	}
 
